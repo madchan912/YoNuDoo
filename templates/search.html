@@ -13,28 +13,19 @@
         <div class="search-bar">
             <input
                 id="search-input"
-                type="text"
+                class="search-input"
                 placeholder="재료를 입력하세요"
+                type="text"
+                value=""
             />
-            <button id="search-button">검색</button>
+            <button id="search-button" class="search-button">검색</button>
         </div>
-        <div id="results">
-            <!-- 검색 결과를 여기서 렌더링합니다 -->
-            {% if results is not none %}
-                {% if results %}
-                    <ul>
-                        {% for recipe in results %}
-                            <li>
-                                <strong>{{ recipe.name }}</strong><br>
-                                재료: {{ recipe.ingredients }}<br>
-                                <a href="{{ recipe.youtube_url }}" target="_blank">유튜브 링크</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>검색 결과가 없습니다.</p>
-                {% endif %}
-            {% endif %}
+        <div id="results" class="grid-container">
+            <!-- 검색 결과가 여기 표시됩니다 -->
+        </div>
+        <div id="no-results-popup" class="popup">
+            <p>검색 결과가 없습니다.</p>
+            <button id="close-popup">확인</button>
         </div>
     </div>
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>

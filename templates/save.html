@@ -11,20 +11,23 @@
         <a href="/" class="navigate-button">검색 화면으로 가기</a>
         <h1>레시피 저장</h1>
         <form id="save-form" method="post">
-            <label for="title">레시피 제목</label>
-            <input type="text" id="title" name="name" placeholder="레시피 제목을 입력하세요" required>
-            <label for="url">레시피 URL</label>
-            <input type="url" id="url" name="youtube_url" placeholder="레시피 URL을 입력하세요">
+            <label for="name">레시피 이름</label>
+            <input type="text" id="name" name="name" placeholder="레시피 이름을 입력하세요" required>
+
             <label for="ingredients">재료</label>
-            <textarea id="ingredients" name="ingredients" placeholder="재료를 한 줄씩 입력하세요" rows="4" required></textarea>
-            <button type="submit">저장</button>
+            <textarea id="ingredients" name="ingredients" placeholder="재료를 띄어쓰기로 구분하여 입력하세요" rows="4" required></textarea>
+
+            <label for="youtube_url">유튜브 URL</label>
+            <input type="url" id="youtube_url" name="youtube_url" placeholder="유튜브 URL을 입력하세요" required>
+
+            <button type="submit" class="save-button">저장</button>
         </form>
-        {% if message %}
-            <div class="popup">
-                <p>{{ message }}</p>
-                <button id="close-popup">확인</button>
-            </div>
-        {% endif %}
+
+        <!-- 저장 결과 팝업 -->
+        <div id="save-popup" class="popup">
+            <p id="popup-message"></p>
+            <button id="close-popup" class="close-popup-button">닫기</button>
+        </div>
     </div>
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </body>

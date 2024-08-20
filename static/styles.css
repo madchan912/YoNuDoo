@@ -1,116 +1,152 @@
+/* 기본 스타일 */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f5f5f5;
+    font-family: Inter, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: var(--background);
+    color: var(--foreground);
 }
 
 .container {
-    max-width: 800px;
+    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
 }
 
-h1 {
-    text-align: center;
-}
-
-.search-bar {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-#search-input {
-    flex-grow: 1;
-    height: 2.5rem;
-    padding: 0 1rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-}
-
-#search-button {
-    height: 2.5rem;
-    padding: 0 1rem;
-    border-radius: 4px;
-    border: 1px solid #007bff;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-}
-
-#search-button:hover {
-    background-color: #0056b3;
-}
-
 .navigate-button {
     display: inline-block;
-    margin-bottom: 20px;
-    text-decoration: none;
+    padding: 10px 20px;
     background-color: #007bff;
     color: #fff;
-    padding: 10px 20px;
-    border-radius: 4px;
-    font-size: 0.9rem;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
 }
 
 .navigate-button:hover {
     background-color: #0056b3;
 }
 
-form {
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.search-bar {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-label {
-    font-weight: bold;
-}
-
-input[type="text"],
-input[type="url"],
-textarea {
-    padding: 0.5rem;
-    border-radius: 4px;
+.search-input {
+    flex: 1;
+    width: 33%;
+    padding: 10px;
     border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
 }
 
-button {
+.search-button {
+    padding: 10px;
+    border: none;
     background-color: #007bff;
     color: #fff;
-    border: none;
-    padding: 10px;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
 }
 
-button:hover {
+.search-button:hover {
     background-color: #0056b3;
 }
 
+.grid-container {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.grid-item {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.grid-item h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.grid-item p {
+    margin: 0 0 1rem;
+}
+
+.grid-item a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.grid-item a:hover {
+    text-decoration: underline;
+}
+
+/* 팝업 스타일 */
 .popup {
+    display: none;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #fff;
+    background-color: white;
     border: 1px solid #ccc;
+    border-radius: 8px;
     padding: 20px;
-    border-radius: 4px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
-.popup button {
+.popup.active {
+    display: block;
+}
+
+.popup p {
+    margin: 0;
+}
+
+#close-popup {
+    margin-top: 10px;
+    padding: 10px;
     background-color: #007bff;
     color: #fff;
     border: none;
-    padding: 10px;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
 }
 
-.popup button:hover {
+#close-popup:hover {
+    background-color: #0056b3;
+}
+
+input[type="text"], input[type="url"], textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+button {
+    padding: 10px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+button:hover {
     background-color: #0056b3;
 }
