@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>레시피 검색</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="/save" class="navigate-button">레시피 저장하기</a>
+        <h1>레시피 검색</h1>
+        <div class="search-bar">
+            <input
+                id="search-input"
+                type="text"
+                placeholder="재료를 입력하세요"
+            />
+            <button id="search-button">검색</button>
+        </div>
+        <div id="results">
+            <!-- 검색 결과를 여기서 렌더링합니다 -->
+            {% if results is not none %}
+                {% if results %}
+                    <ul>
+                        {% for recipe in results %}
+                            <li>
+                                <strong>{{ recipe.name }}</strong><br>
+                                재료: {{ recipe.ingredients }}<br>
+                                <a href="{{ recipe.youtube_url }}" target="_blank">유튜브 링크</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>검색 결과가 없습니다.</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

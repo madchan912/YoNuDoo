@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>레시피 저장</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="navigate-button">검색 화면으로 가기</a>
+        <h1>레시피 저장</h1>
+        <form id="save-form" method="post">
+            <label for="title">레시피 제목</label>
+            <input type="text" id="title" name="name" placeholder="레시피 제목을 입력하세요" required>
+            <label for="url">레시피 URL</label>
+            <input type="url" id="url" name="youtube_url" placeholder="레시피 URL을 입력하세요">
+            <label for="ingredients">재료</label>
+            <textarea id="ingredients" name="ingredients" placeholder="재료를 한 줄씩 입력하세요" rows="4" required></textarea>
+            <button type="submit">저장</button>
+        </form>
+        {% if message %}
+            <div class="popup">
+                <p>{{ message }}</p>
+                <button id="close-popup">확인</button>
+            </div>
+        {% endif %}
+    </div>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>
