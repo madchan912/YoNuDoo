@@ -3,6 +3,8 @@ import mysql.connector
 
 app = Flask(__name__)
 
+# python app.py 시작 명령어
+
 # 데이터베이스 연결 설정
 db_config = {
     'host': 'localhost',
