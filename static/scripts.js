@@ -13,12 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
         searchButton.addEventListener('click', function () {
             var query = searchInput.value.trim();
 
-            if (query === "") {
-                resultsContainer.innerHTML = "";  // 검색어가 없을 때 결과 비우기
-                return;
-            }
-
-            // 서버에 검색 쿼리 전송
+            // 검색어가 없더라도 서버에 검색 요청을 보냅니다.
             fetch(`/search?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(data => {
@@ -27,18 +22,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     } else {
                         noResultsPopup.classList.remove('active');
                         // 결과를 DOM에 업데이트
-                        resultsContainer.innerHTML = data.results.map(recipe => {
-                            // 검색어 볼드 처리
-                            var highlightedIngredients = recipe.ingredients.replace(new RegExp(query, 'gi'), (match) => `<strong>${match}</strong>`);
-
-                            return `
-                                <div class="grid-item">
-                                    <h2>${recipe.name}</h2>
-                                    <p>${highlightedIngredients}</p>
-                                    <a href="${recipe.youtube_url}" target="_blank">유튜브 링크</a>
-                                </div>
-                            `;
-                        }).join('');
+                        resultsContainer.innerHTML = data.results.map(recipe => `
+                            <div class="grid-item">
+                                <h2>${recipe.name}</h2>
+                                <p>${recipe.ingredients}</p>
+                                <a href="${recipe.youtube_url}" target="_blank">유튜브 링크</a>
+                            </div>
+                        `).join('');
                     }
                 })
                 .catch(error => {

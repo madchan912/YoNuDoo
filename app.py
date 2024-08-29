@@ -45,26 +45,33 @@ def search_recipes():
     query = request.args.get('q', '')
     results = []
 
-    if query:
-        try:
-            conn = mysql.connector.connect(**db_config)
-            cursor = conn.cursor(dictionary=True)
-            # SQL 쿼리를 수정하여 제목(name)과 재료(ingredients) 모두 검색되도록 설정
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        if query:
+            # 검색어가 있을 때
             sql = """
                 SELECT name, ingredients, youtube_url 
                 FROM recipes 
                 WHERE name LIKE %s OR ingredients LIKE %s
             """
             cursor.execute(sql, ('%' + query + '%', '%' + query + '%'))
-            results = cursor.fetchall()
-        except mysql.connector.Error as err:
-            print(f"오류: {err}")
-        finally:
-            if conn.is_connected():
-                cursor.close()
-                conn.close()
+        else:
+            # 검색어가 없을 때 모든 레시피 반환
+            sql = "SELECT name, ingredients, youtube_url FROM recipes"
+            cursor.execute(sql)
+
+        results = cursor.fetchall()
+    except mysql.connector.Error as err:
+        print(f"오류: {err}")
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
 
     return jsonify(results=results)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
