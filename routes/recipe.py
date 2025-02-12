@@ -1,15 +1,45 @@
 from fastapi import APIRouter, HTTPException
 from models.recipe import Recipe, RecipeCreate
+from models.autocomplete import AutoComplete
+from typing import List
 from beanie import PydanticObjectId
 
 router = APIRouter()
 
+# 한글 초성 변환 함수
+def get_chosung(text):
+    CHOSUNG = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
+    HANGUL_START = 0xAC00
+    HANGUL_END = 0xD7A3
+    CHOSUNG_INTERVAL = 588
+
+    return "".join([
+        CHOSUNG[(ord(char) - HANGUL_START) // CHOSUNG_INTERVAL] if HANGUL_START <= ord(char) <= HANGUL_END else char
+        for char in text
+    ])
+
+# 자동완성 데이터 저장 함수
+async def update_autocomplete(ingredients: List[str]):
+    for ingredient in ingredients:
+        search_keywords = list(set(ingredient) | set(get_chosung(ingredient)))
+
+        existing_entry = await AutoComplete.find_one(AutoComplete.ingredient == ingredient)
+        if existing_entry:
+            existing_entry.search_keywords = list(set(existing_entry.search_keywords + search_keywords))
+            await existing_entry.save()
+        else:
+            new_entry = AutoComplete(ingredient=ingredient, search_keywords=search_keywords)
+            await new_entry.insert()
+
 # 레시피 추가 API
-@router.post("/")
+@router.post("/", response_model=Recipe)
 async def create_recipe(recipe: RecipeCreate):
     new_recipe = Recipe(**recipe.dict())
     await new_recipe.insert()
-    return {"message": "레시피 추가 성공!", "recipe": new_recipe}
+
+    await update_autocomplete(recipe.ingredients)
+
+    return new_recipe
 
 # 모든 레시피 조회 API
 @router.get("/")
