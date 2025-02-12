@@ -1,0 +1,6 @@
+# 가상환경 및 Python 캐시 파일 무시
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
