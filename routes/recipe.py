@@ -6,29 +6,47 @@ from beanie import PydanticObjectId
 
 router = APIRouter()
 
-# 한글 초성 변환 함수
-def get_chosung(text):
-    CHOSUNG = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
-    HANGUL_START = 0xAC00
-    HANGUL_END = 0xD7A3
-    CHOSUNG_INTERVAL = 588
-
-    return "".join([
-        CHOSUNG[(ord(char) - HANGUL_START) // CHOSUNG_INTERVAL] if HANGUL_START <= ord(char) <= HANGUL_END else char
-        for char in text
-    ])
-
 # 자동완성 데이터 저장 함수
 async def update_autocomplete(ingredients: List[str]):
+    base_code = 0xAC00  # '가'의 유니코드
+    CHOSUNG = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ",
+               "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
+    compound_final_map = {3: 1, 5: 4, 6: 4, 9: 8, 10: 8, 11: 8, 12: 8, 13: 8, 14: 8, 15: 8, 19: 17}
+
     for ingredient in ingredients:
-        search_keywords = list(set(ingredient) | set(get_chosung(ingredient)))
+        search_keywords = set()
+
+        for char in ingredient:
+            if not ('가' <= char <= '힣'):
+                search_keywords.add(char)
+                continue
+
+            code = ord(char) - base_code
+            chosung_index = code // (21 * 28)
+            jungsung_index = (code % (21 * 28)) // 28
+            jongsung_index = code % 28
+
+            initial = CHOSUNG[chosung_index]
+            no_final = chr(base_code + (chosung_index * 21 * 28) + (jungsung_index * 28))
+
+            search_keywords.add(initial)
+            search_keywords.add(no_final)
+
+            if jongsung_index != 0:
+                if jongsung_index in compound_final_map:
+                    first_final_index = compound_final_map[jongsung_index]
+                    variant = chr(base_code + (chosung_index * 21 * 28) + (jungsung_index * 28) + first_final_index)
+                    search_keywords.add(variant)
+                search_keywords.add(char)
+
+        search_keywords.add(ingredient)
 
         existing_entry = await AutoComplete.find_one(AutoComplete.ingredient == ingredient)
         if existing_entry:
-            existing_entry.search_keywords = list(set(existing_entry.search_keywords + search_keywords))
+            existing_entry.search_keywords = list(set(existing_entry.search_keywords + list(search_keywords)))
             await existing_entry.save()
         else:
-            new_entry = AutoComplete(ingredient=ingredient, search_keywords=search_keywords)
+            new_entry = AutoComplete(ingredient=ingredient, search_keywords=list(search_keywords))
             await new_entry.insert()
 
 # 레시피 추가 API

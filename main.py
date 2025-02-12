@@ -4,7 +4,7 @@ from services.database import db
 from beanie import init_beanie
 from routes.recipe import Recipe
 from contextlib import asynccontextmanager
-from routes import recipe
+from routes import recipe, autocomplete
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 from models.autocomplete import AutoComplete
@@ -16,6 +16,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(recipe.router, prefix="/recipes", tags=["Recipes"])
+app.include_router(autocomplete.router)
 
 # Jinja2 템플릿 설정
 BASE_DIR = Path(__file__).resolve().parent
