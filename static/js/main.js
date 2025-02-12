@@ -1,15 +1,26 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
     const searchInput = document.getElementById("ingredient-search");
     const suggestionsList = document.getElementById("suggestions");
     const selectedIngredients = document.getElementById("selected-ingredients");
+    const recipeResults = document.getElementById("recipe-results");
 
-    // ✅ 백엔드 API에서 자동완성 데이터 가져오기
+    let allRecipes = []; // 전체 레시피 데이터를 저장할 변수
+
+    async function fetchAllRecipes() {
+        try {
+            const response = await fetch("/recipes/all");
+            if (!response.ok) throw new Error("Failed to fetch recipes");
+            allRecipes = await response.json();
+            updateRecipes(); // 처음 화면 로드 시 모든 레시피 표시
+        } catch (error) {
+            console.error("Error fetching recipes:", error);
+        }
+    }
+
     async function fetchAutocomplete(query) {
         try {
             const response = await fetch(`/autocomplete?query=${query}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch autocomplete data");
-            }
+            if (!response.ok) throw new Error("Failed to fetch autocomplete data");
             return await response.json();
         } catch (error) {
             console.error("Error fetching autocomplete data:", error);
@@ -17,41 +28,29 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // ✅ 검색창 입력 이벤트 처리
     searchInput.addEventListener("input", async function() {
         let query = searchInput.value.trim();
-        suggestionsList.innerHTML = ""; // ✅ 기존 목록 초기화
+        suggestionsList.innerHTML = "";
 
-        if (query.length === 0) {
-            return;
-        }
+        if (query.length === 0) return;
 
-        let matches = await fetchAutocomplete(query); // ✅ 백엔드 API에서 자동완성 데이터 가져오기
-
-        if (matches.length === 0) {
-            return;
-        }
+        let matches = await fetchAutocomplete(query);
+        if (matches.length === 0) return;
 
         matches.forEach(match => {
             let li = document.createElement("li");
             li.textContent = match;
             li.addEventListener("click", function() {
                 addIngredient(match);
-                suggestionsList.innerHTML = ""; // ✅ 클릭하면 자동완성 목록 숨김
-                searchInput.value = ""; // ✅ 선택 후 입력창 초기화
+                suggestionsList.innerHTML = "";
+                searchInput.value = "";
             });
             suggestionsList.appendChild(li);
         });
     });
 
-    // ✅ 선택된 재료 추가 함수
     function addIngredient(ingredient) {
-        let existingItems = selectedIngredients.getElementsByClassName("ingredient-item");
-        for (let item of existingItems) {
-            if (item.textContent.includes(ingredient)) {
-                return; // ✅ 중복 추가 방지
-            }
-        }
+        if ([...selectedIngredients.children].some(span => span.textContent.includes(ingredient))) return;
 
         let span = document.createElement("span");
         span.textContent = ingredient;
@@ -62,9 +61,36 @@ document.addEventListener("DOMContentLoaded", function() {
         removeBtn.classList.add("remove-btn");
         removeBtn.addEventListener("click", function() {
             span.remove();
+            updateRecipes();
         });
 
         span.appendChild(removeBtn);
         selectedIngredients.appendChild(span);
+
+        updateRecipes();
     }
+
+    function updateRecipes() {
+    let selected = [...selectedIngredients.children].map(span => span.textContent.replace("X", "").trim());
+
+    if (selected.length === 0) {
+        recipeResults.innerHTML = "<p>모든 레시피 목록</p>" +
+            allRecipes.map(recipe =>
+                `<p>${recipe.title} - <a href="${recipe.url}" target="_blank">레시피 보기</a></p>`
+            ).join("");
+        return;
+    }
+
+    let filteredRecipes = allRecipes.filter(recipe =>
+        selected.every(ing => recipe.ingredients.includes(ing))
+    );
+
+    recipeResults.innerHTML = filteredRecipes.length
+        ? filteredRecipes.map(recipe =>
+            `<p>${recipe.title} - <a href="${recipe.url}" target="_blank">레시피 보기</a></p>`
+        ).join("")
+        : "<p>해당하는 레시피가 없습니다.</p>";
+}
+
+    fetchAllRecipes(); // 페이지 로드 시 전체 레시피 가져오기
 });

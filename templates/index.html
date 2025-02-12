@@ -9,12 +9,13 @@
 <body>
     <h1>레시피 검색</h1>
 
-    <!-- ✅ 검색창 추가 -->
     <input type="text" id="ingredient-search" placeholder="재료를 입력하세요">
     <ul id="suggestions"></ul>
 
-    <!-- ✅ 선택된 재료 표시 -->
     <div id="selected-ingredients"></div>
+
+    <h2>레시피 목록</h2>
+    <div id="recipe-results"></div>
 
     <script src="{{ url_for('static', path='js/main.js') }}"></script>
 </body>

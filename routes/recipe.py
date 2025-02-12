@@ -87,3 +87,17 @@ async def delete_recipe(recipe_id: PydanticObjectId):
 
     await recipe.delete()
     return {"message": "레시피 삭제 성공!"}
+
+@router.get("/all", response_model=list[Recipe])
+async def get_all_recipes():
+    return await Recipe.find().to_list()
+
+@router.post("/bulk")
+async def create_multiple_recipes(recipes: List[RecipeCreate]):
+    new_recipes = [Recipe(**recipe.dict()) for recipe in recipes]
+    await Recipe.insert_many(new_recipes)
+
+    all_ingredients = set(ingredient for recipe in recipes for ingredient in recipe.ingredients)
+    await update_autocomplete(list(all_ingredients))
+
+    return {"message": f"{len(new_recipes)}개의 레시피가 추가되었습니다!"}

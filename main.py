@@ -16,6 +16,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(recipe.router, prefix="/recipes", tags=["Recipes"])
+
 app.include_router(autocomplete.router)
 
 # Jinja2 템플릿 설정
