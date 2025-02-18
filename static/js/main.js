@@ -4,16 +4,28 @@ document.addEventListener("DOMContentLoaded", async function() {
     const selectedIngredients = document.getElementById("selected-ingredients");
     const recipeResults = document.getElementById("recipe-results");
 
-    let allRecipes = []; // 전체 레시피 데이터를 저장할 변수
+    let allRecipes = [];
 
     async function fetchAllRecipes() {
         try {
             const response = await fetch("/recipes/all");
             if (!response.ok) throw new Error("Failed to fetch recipes");
             allRecipes = await response.json();
-            updateRecipes(); // 처음 화면 로드 시 모든 레시피 표시
+            updateRecipes();
         } catch (error) {
             console.error("Error fetching recipes:", error);
+        }
+    }
+
+    async function fetchFilteredRecipes(selected) {
+        try {
+            const query = selected.length > 0 ? `?ingredients=${selected.join(",")}` : "";
+            const response = await fetch(`/recipes${query}`);
+            if (!response.ok) throw new Error("Failed to fetch filtered recipes");
+            const recipes = await response.json();
+            updateRecipeDisplay(recipes);
+        } catch (error) {
+            console.error("Error fetching filtered recipes:", error);
         }
     }
 
@@ -71,26 +83,22 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 
     function updateRecipes() {
-    let selected = [...selectedIngredients.children].map(span => span.textContent.replace("X", "").trim());
+        let selected = [...selectedIngredients.children].map(span => span.textContent.replace("X", "").trim());
 
-    if (selected.length === 0) {
-        recipeResults.innerHTML = "<p>모든 레시피 목록</p>" +
-            allRecipes.map(recipe =>
-                `<p>${recipe.title} - <a href="${recipe.url}" target="_blank">레시피 보기</a></p>`
-            ).join("");
-        return;
+        if (selected.length === 0) {
+            fetchAllRecipes();
+        } else {
+            fetchFilteredRecipes(selected);
+        }
     }
 
-    let filteredRecipes = allRecipes.filter(recipe =>
-        selected.every(ing => recipe.ingredients.includes(ing))
-    );
+    function updateRecipeDisplay(recipes) {
+        recipeResults.innerHTML = recipes.length
+            ? recipes.map(recipe =>
+                `<p>${recipe.title} - <a href="${recipe.url}" target="_blank">레시피 보기</a></p>`
+            ).join("")
+            : "<p>해당하는 레시피가 없습니다.</p>";
+    }
 
-    recipeResults.innerHTML = filteredRecipes.length
-        ? filteredRecipes.map(recipe =>
-            `<p>${recipe.title} - <a href="${recipe.url}" target="_blank">레시피 보기</a></p>`
-        ).join("")
-        : "<p>해당하는 레시피가 없습니다.</p>";
-}
-
-    fetchAllRecipes(); // 페이지 로드 시 전체 레시피 가져오기
+    fetchAllRecipes();
 });

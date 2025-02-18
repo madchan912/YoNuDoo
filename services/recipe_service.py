@@ -14,6 +14,14 @@ async def create_recipe(recipe_data: RecipeCreate):
 async def get_all_recipes():
     return await Recipe.find().to_list()
 
+# 특정 레시피 조회
+async def get_filtered_recipes(ingredients: str):
+    if not ingredients:
+        return await get_all_recipes()
+
+    ingredient_list = ingredients.split(",")
+    return await Recipe.find({"ingredients": {"$all": ingredient_list}}).to_list()
+
 # 특정 레시피 수정
 async def update_recipe(recipe_id: PydanticObjectId, updated_data: RecipeCreate):
     recipe = await Recipe.get(recipe_id)

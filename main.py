@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from services.database import db
 from beanie import init_beanie
-from routes.recipe import Recipe
+from models.recipe import Recipe
 from contextlib import asynccontextmanager
 from routes import recipe, autocomplete
 from fastapi.templating import Jinja2Templates
