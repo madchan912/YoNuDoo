@@ -6,3 +6,4 @@ __pycache__/
 .idea/dataSources.xml
 .idea/dataSources/
 .idea/encodings.xml
+.DS_Store
