@@ -2,13 +2,13 @@ import motor.motor_asyncio
 import os
 from dotenv import load_dotenv
 
-# 환경 변수 로드
+# .env 파일 로드
 load_dotenv()
 
-# MongoDB 연결 정보 가져오기
-MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
+# 환경 변수 설정 (기본값 추가)
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://root:1234@mongo:27017/YoNuDoo?authSource=admin")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "YoNuDoo")
 
-# MongoDB 클라이언트 생성
+# MongoDB 클라이언트 설정
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URI)
-db = client[MONGO_DB_NAME]  # 사용할 데이터베이스 선택
+db = client[MONGO_DB_NAME]
