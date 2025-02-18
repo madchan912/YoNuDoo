@@ -1,12 +1,9 @@
 from fastapi import APIRouter, Query
-from models.autocomplete import AutoComplete
+from services.autocomplete_service import search_autocomplete
 
 router = APIRouter()
 
+# 자동완성 검색 API
 @router.get("/autocomplete")
 async def get_autocomplete(query: str = Query(..., min_length=1)):
-    results = await AutoComplete.find(
-        {"search_keywords": {"$regex": f"^{query}"}}
-    ).to_list()
-
-    return [result.ingredient for result in results]
+    return await search_autocomplete(query)

@@ -18,7 +18,7 @@ class RecipeCreate(BaseModel):
     url: str = Field(..., title="YouTube URL", pattern="https?://[^\s]+")  # 유효한 유튜브 URL 형식 검증
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {  # API 문서에서 예제로 표시될 데이터
                 "title": "Delicious Pasta",
                 "ingredients": ["Pasta", "Tomato Sauce", "Cheese"],
